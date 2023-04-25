@@ -49,7 +49,7 @@ const router = createBrowserRouter([
 function App() {
   return (
     <div className='flex justify-center'>
-      <div className='w-9/12'>
+      <div className="w-9/12 max-w-7xl">
         <RouterProvider router={router} />
       </div>  
     </div>

@@ -15,7 +15,7 @@ const Home = () => {
     image: "https://dummyimage.com/1920x1080/9bd1c8/dcdce0"
   },
    {
-      id: 2,
+      id: 3,
       title: "Post 3",
       desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.",
       image: "https://dummyimage.com/1920x1080/9bd1c8/dcdce0"
