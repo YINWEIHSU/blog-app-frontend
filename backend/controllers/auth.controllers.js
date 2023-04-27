@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs')
 // JWT
 const jwt = require('jsonwebtoken')
 
-const authController =  {
+const authController = {
   register: async (req, res) => {
     const { name, email, password, confirmPassword } = req.body
     if (!name || !email || !password || !confirmPassword) {
@@ -40,9 +40,13 @@ const authController =  {
     const payload = { id: user.id }
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1day' })
     return res.cookie('access_token', token, { httpOnly: true }).json({ message: 'ok', user: { id: user.id, name: user.name, email: user.email } })
-},
-
-
+  },
+  logout: (req, res) => {
+    return res.clearCookie('access_token', {
+      sameSite: 'none',
+      secure: true
+    }).status(200).json({ message: 'User has been logged out' })
+  }
 }
 
 module.exports = authController
