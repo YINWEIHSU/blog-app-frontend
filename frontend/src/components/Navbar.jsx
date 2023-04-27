@@ -8,10 +8,13 @@ const Navbar = () => {
   return (
     <div>
       <div className='flex justify-between items-center py-2.5'>
-        <div>logo</div>
+        <div><Link to="/">Logo</Link></div>
         <div className='flex items-center gap-2.5'>
           <Link to='/?cat=life'>
             <h6 className='text-base font-light'>Life</h6>
+          </Link>
+          <Link to='/?cat=work'>
+            <h6 className='text-base font-light'>Work</h6>
           </Link>
           <Link to='/?cat=coding'>
             <h6 className='text-base font-light'>Coding</h6>
