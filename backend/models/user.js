@@ -1,11 +1,10 @@
-'use strict';
+'use strict'
 const {
   Model
-} = require('sequelize');
+} = require('sequelize')
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
-
-    static associate(models) {
+    static associate (models) {
       // define association here
       User.hasMany(models.Post)
     }
@@ -17,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'User',
-    underscored: true,
-  });
+    underscored: true
+  })
   return User
-};
+}

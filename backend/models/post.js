@@ -1,12 +1,12 @@
-'use strict';
+'use strict'
 const {
   Model
-} = require('sequelize');
+} = require('sequelize')
 module.exports = (sequelize, DataTypes) => {
   class Post extends Model {
-    static associate(models) {
-      // define association here
+    static associate (models) {
       Post.belongsTo(models.User)
+      Post.belongsTo(models.Category)
     }
   }
   Post.init({
@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Post',
-    underscored: true,
-  });
+    underscored: true
+  })
   return Post
-};
+}

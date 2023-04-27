@@ -6,6 +6,11 @@ const SEED_USER = {
   email: 'root@example.com',
   password: '12345678'
 }
+const SEED_CATEGORIES = [
+  'Life',
+  'Work',
+  'Learning'
+]
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
@@ -16,12 +21,21 @@ module.exports = {
       created_at: new Date(),
       updated_at: new Date()
     }], {})
+    const categoryId = await queryInterface.bulkInsert('Categories',
+      SEED_CATEGORIES.map((item, index) =>
+      ({
+        name: item,
+        created_at: new Date(),
+        updated_at: new Date()
+      })
+      ), {})
     await queryInterface.bulkInsert('Posts',
       Array.from({ length: 10 }).map((_, i) =>
       ({
         title: `title-${i}`,
         content: `content-${i}`,
         user_id: userId,
+        category_id: categoryId,
         created_at: new Date(),
         updated_at: new Date()
       })
@@ -30,5 +44,6 @@ module.exports = {
   async down (queryInterface, Sequelize) {
     await queryInterface.bulkDelete('Posts', null, {})
     await queryInterface.bulkDelete('Users', null, {}) 
+    await queryInterface.bulkDelete('Categories', null, {})
   }
   }

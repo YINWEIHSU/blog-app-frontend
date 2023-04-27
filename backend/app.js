@@ -15,9 +15,9 @@ app.use(express.static(path.join(__dirname, 'public')))
 require('./routes/index.routes')(app)
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404))
-});
+app.use(function (req, res, next) {
+  next(createError(404, `Request Url: "${req.originalUrl}" not found`))
+})
 
 // error handler
 app.use(function(err, req, res, next) {
