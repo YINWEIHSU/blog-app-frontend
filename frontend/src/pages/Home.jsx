@@ -5,7 +5,6 @@ import axios from 'axios'
 const Home = () => {
   const [posts, setPosts] = useState([])
   const category = useLocation().search
-  console.log(category)
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -28,11 +27,11 @@ const Home = () => {
               <img className='w-full max-h-96 object-cover' src={post.image} alt='' />
             </div>
             <div className='grow-3 flex flex-col justify-between'>
-              <Link to={`/post/${post.id}`}>
-                <h1 className='text-5xl'>{post.title}</h1>
-              </Link>
+              <h1 className='text-5xl'>{post.title}</h1>
               <p className='text-xl'>{post.desc}</p>
-              <button className='w-max py-2.5 text-gray-400 hover:text-black'>Read more...</button>
+              <Link to={`/post/${post.id}`}>
+                <button className='w-max py-2.5 text-gray-400 hover:text-black'>Read more...</button>
+              </Link>
             </div>
 
           </div>

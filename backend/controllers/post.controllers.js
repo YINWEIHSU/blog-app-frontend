@@ -11,7 +11,7 @@ const postController = {
     return res.status(200).json(results)
   },
   getPost: async (req, res) => {
-    const query = `SELECT * FROM posts WHERE posts.id=${req.params.id}`
+    const query = `SELECT email, title, content, p.created_at, p.updated_at FROM posts p JOIN users u ON p.user_id = u.id WHERE p.id=${req.params.id}`
     const [results] = await db.sequelize.query(query)
     return res.status(200).json(results)
   },
