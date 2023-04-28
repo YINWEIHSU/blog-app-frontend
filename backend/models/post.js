@@ -11,7 +11,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   Post.init({
     title: DataTypes.STRING,
-    content: DataTypes.TEXT
+    content: DataTypes.TEXT,
+    status: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Post',

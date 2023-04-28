@@ -36,6 +36,7 @@ module.exports = {
         content: `content-${i}`,
         user_id: userId,
         category_id: categoryId,
+        status: 'draft',
         created_at: new Date(),
         updated_at: new Date()
       })
