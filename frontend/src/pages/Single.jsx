@@ -4,6 +4,7 @@ import Menu from '../components/Menu'
 import axios from 'axios'
 import moment from 'moment'
 import AuthContext from '../context/AuthContext'
+import MDEditor from '@uiw/react-md-editor'
 
 const Single = () => {
   const [post, setPost] = useState({})
@@ -36,7 +37,7 @@ const Single = () => {
 
   return (
     <div className='flex gap-12'>
-      <div className='grow-5 flex flex-col gap-7 max-w-2xl'>
+      <div data-color-mode='light' className='grow-5 flex flex-col gap-7 max-w-2xl'>
         <img className='h-80 w-full object-cover' src='https://live.staticflickr.com/65535/49187844993_0f6ec0c349_b.jpg' alt='' />
         <div className='flex items-center gap-2.5 text-sm'>
           <img className='w-12 h-12 rounded-full object-cover' src='https://dummyimage.com/1920x1080/9bd1c8/dcdce0' alt='' />
@@ -44,15 +45,16 @@ const Single = () => {
             <span className='font-bold'>User</span>
             <p>Posted {moment(post.updated_at).fromNow()}</p>
           </div>
-          {currentUser && currentUser.email === post.email && (<div className='flex gap-1.5'>
-            <Link to='/write?edit=123'>
-              <div>Edit</div>
-            </Link>
-            <div onClick={handleDelete}>Delete</div>
-          </div>)}
+          {currentUser && currentUser.email === post.email && (
+            <div className='flex gap-1.5'>
+              <Link to='/write?edit=123' state={post}>
+                <div>Edit</div>
+              </Link>
+              <div onClick={handleDelete}>Delete</div>
+            </div>
+          )}
         </div>
-        <h1 className='text-4xl'>{post.title}</h1>
-        <p className='text-justify leading-7'>{post.content}</p>
+        <MDEditor.Markdown source={post.content} style={{ whiteSpace: 'pre-wrap' }} />
       </div>
       <Menu category={post.category} currentPostId={post.id} />
     </div>

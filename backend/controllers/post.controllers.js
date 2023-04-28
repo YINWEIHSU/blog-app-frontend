@@ -1,6 +1,6 @@
 const db = require('../models')
 const Post = db.Post
-const User = db.User
+const Category = db.Category
 
 const postController = {
   getPosts: async (req, res) => {
@@ -16,23 +16,31 @@ const postController = {
     return res.status(200).json(results)
   },
   createPost: async (req, res) => {
-    const { title, content } = req.body
+    const { title, content, category, status } = req.body
+    const userId = req.user.dataValues.id
+    const categoryData = await Category.findOne({ where: { name: category } })
     const post = await Post.create({
       title,
       content,
-      UserId: req.user.id
+      status,
+      UserId: userId,
+      CategoryId: categoryData.dataValues.id
     })
     return res.status(201).json(post)
   },
   updatePost: async (req, res) => {
-    const { title, content } = req.body
-    const post = await Post.findByPk(req.params.id)
+    const { id, title, content, category, status } = req.body
+    const categoryData = await Category.findOne({ where: { name: category } })
+    const post = await Post.findByPk(id)
+
     if (!post) {
       return res.status(404).json({ message: 'Post not found' })
     }
     await post.update({
       title,
-      content
+      content,
+      status,
+      CategoryId: categoryData.dataValues.id
     })
     return res.status(200).json(post)
   },
@@ -40,7 +48,6 @@ const postController = {
     const user = req.user.dataValues
     const postData = await Post.findByPk(req.params.id)
     const post = postData.dataValues
-    console.log(post)
     if (!post) {
       return res.status(404).json({ message: 'Post not found' })
     }
