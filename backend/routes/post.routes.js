@@ -1,13 +1,14 @@
 const express = require('express')
 const router = express.Router()
 const db = require('../models')
-const Post = db.Post
 const postController = require('../controllers/post.controllers')
+const passport = require('../common/passport')
+const authenticated = passport.authenticate('jwt', { session: false })
 
 router.get('/', postController.getPosts)
 router.get('/:id', postController.getPost)
-router.post('/', postController.createPost)
-router.put('/:id', postController.updatePost)
-router.delete('/:id', postController.deletePost)
+router.post('/', authenticated, postController.createPost)
+router.put('/:id', authenticated, postController.updatePost)
+router.delete('/:id', authenticated, postController.deletePost)
 
 module.exports = router

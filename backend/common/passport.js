@@ -6,7 +6,14 @@ const db = require('../models')
 const User = db.User
 
 const jwtOptions = {}
-jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken()
+const cookieExtractor = function (req) {
+  let token = null
+  if (req && req.cookies) {
+    token = req.cookies.access_token
+  }
+  return token
+}
+jwtOptions.jwtFromRequest = ExtractJwt.fromExtractors([ExtractJwt.fromAuthHeaderAsBearerToken(), cookieExtractor])
 jwtOptions.secretOrKey = process.env.JWT_SECRET
 
 const strategy = new JwtStrategy(jwtOptions, async function (jwtPayload, next) {

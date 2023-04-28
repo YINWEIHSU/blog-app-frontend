@@ -11,7 +11,7 @@ const postController = {
     return res.status(200).json(results)
   },
   getPost: async (req, res) => {
-    const query = `SELECT email, title, content, p.created_at, p.updated_at FROM posts p JOIN users u ON p.user_id = u.id WHERE p.id=${req.params.id}`
+    const query = `SELECT p.id AS id, email, title, content, c.name AS category, p.created_at, p.updated_at FROM posts p JOIN users u ON p.user_id = u.id JOIN categories c ON c.id = p.category_id WHERE p.id=${req.params.id}`
     const [results] = await db.sequelize.query(query)
     return res.status(200).json(results)
   },
@@ -37,12 +37,19 @@ const postController = {
     return res.status(200).json(post)
   },
   deletePost: async (req, res) => {
-    const post = await Post.findByPk(req.params.id)
+    const user = req.user.dataValues
+    const postData = await Post.findByPk(req.params.id)
+    const post = postData.dataValues
+    console.log(post)
     if (!post) {
       return res.status(404).json({ message: 'Post not found' })
     }
-    await post.destroy()
-    return res.status(204).json()
+    if (post.UserId !== user.id) {
+      return res.status(403).json({ message: 'You are not authorized to do this' })
+    }
+
+    await postData.destroy()
+    return res.status(204).json({ message: 'Post deleted' })
   }
 }
 
