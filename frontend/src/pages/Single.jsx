@@ -8,7 +8,6 @@ import MDEditor from '@uiw/react-md-editor'
 
 const Single = () => {
   const [post, setPost] = useState({})
-  console.log(post)
   const location = useLocation()
   const navigate = useNavigate()
   const postId = location.pathname.split('/')[2]
@@ -27,18 +26,21 @@ const Single = () => {
     const fetchPost = async () => {
       try {
         const res = await axios.get(`/posts/${postId}`)
+        if (res.data.length === 0) {
+          navigate('/404')
+        }
         setPost(res.data[0])
       } catch (err) {
         console.log(err)
       }
     }
     fetchPost()
-  }, [postId])
+  }, [postId, navigate])
 
   return (
     <div className='flex gap-12'>
       <div data-color-mode='light' className='grow-5 flex flex-col gap-7 max-w-2xl'>
-        <img className='h-80 w-full object-cover' src='https://live.staticflickr.com/65535/49187844993_0f6ec0c349_b.jpg' alt='' />
+        <img className='h-80 w-full object-cover' src={post.img} alt='' />
         <div className='flex items-center gap-2.5 text-sm'>
           <img className='w-12 h-12 rounded-full object-cover' src='https://dummyimage.com/1920x1080/9bd1c8/dcdce0' alt='' />
           <div>

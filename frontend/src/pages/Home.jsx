@@ -24,7 +24,7 @@ const Home = () => {
         {posts.map(post => (
           <div className='flex gap-20' key={post.id}>
             <div className='grow-2'>
-              <img className='w-full max-h-96 object-cover' src={post.image} alt='' />
+              <img className='w-full max-h-96 object-cover' src={post.img} alt='' />
             </div>
             <div className='grow-3 flex flex-col justify-between'>
               <h1 className='text-5xl'>{post.title}</h1>

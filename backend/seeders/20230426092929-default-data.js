@@ -37,6 +37,7 @@ module.exports = {
         user_id: userId,
         category_id: categoryId,
         status: 'draft',
+        img:'https://live.staticflickr.com/65535/49187844993_0f6ec0c349_b.jpg',
         created_at: new Date(),
         updated_at: new Date()
       })
