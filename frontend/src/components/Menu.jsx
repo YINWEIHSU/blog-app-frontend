@@ -22,7 +22,9 @@ const Menu = ({ category, currentPostId }) => {
       <h1>Other posts</h1>
       {posts.map(post => (
         <div className='post flex flex-col gap-2.5' key={post.id}>
-          <img className='h-48 w-full object-cover' src={post.image} alt='' />
+          <div className='w-full'>
+            <img className='h-36 w-full object-cover' src={post.img} alt='' />
+          </div>
           <h2 className='text-3xl text-gray-700'>{post.title}</h2>
           <Link to={`/post/${post.id}`}>
             <button className='w-max py-2.5 text-gray-400 hover:text-black'>Read more...</button>

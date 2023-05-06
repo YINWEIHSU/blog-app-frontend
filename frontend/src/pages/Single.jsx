@@ -38,11 +38,11 @@ const Single = () => {
   }, [postId, navigate])
 
   return (
-    <div className='flex gap-12'>
+    <div className='flex justify-between gap-12'>
       <div data-color-mode='light' className='grow-5 flex flex-col gap-7 max-w-2xl'>
-        <img className='h-80 w-full object-cover' src={post.img} alt='' />
+        <img className='w-full object-cover' src={post.img} alt='' />
         <div className='flex items-center gap-2.5 text-sm'>
-          <img className='w-12 h-12 rounded-full object-cover' src='https://dummyimage.com/1920x1080/9bd1c8/dcdce0' alt='' />
+          <img className='w-14 h-14 rounded-full object-cover' src='https://dummyimage.com/1920x1080/9bd1c8/dcdce0' alt='' />
           <div>
             <span className='font-bold'>User</span>
             <p>Posted {moment(post.updated_at).fromNow()}</p>
