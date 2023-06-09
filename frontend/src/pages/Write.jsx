@@ -1,11 +1,15 @@
-import React, { useReducer, useEffect, useRef } from 'react'
+import React, { useReducer, useEffect, useRef, useContext } from 'react'
+import PostContext from '../context/PostContext'
 import MDEditor from '@uiw/react-md-editor'
 import rehypeSanitize from 'rehype-sanitize'
 import { useLocation, useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import './write.scss'
 
 const CONTENT_ON_CHANGE = 'content-on-change'
 const CATEGORY_ON_CHANGE = 'category-on-change'
+const TAGS_ON_CHANGE = 'tags-on-change'
+const NEW_CATEGORY_INPUT_ON_CHANGE = 'new-category-input-on-change'
+
 const getContentOnChangeState = (state, payload) => {
   const content = payload
   const startIndex = content.indexOf('# ') > -1 ? content.indexOf('# ') + 1 : -1
@@ -18,7 +22,21 @@ const getContentOnChangeState = (state, payload) => {
 }
 
 const getCategoryOnChangeState = (state, payload) => {
-  return { ...state, category: payload, errorMessage: '' }
+  const isAddingNewCategory = payload === 'add-new'
+  return {
+    ...state,
+    category: isAddingNewCategory ? state.category : payload,
+    isAddingNewCategory,
+    errorMessage: ''
+  }
+}
+
+const getTagsOnChangeState = (state, payload) => {
+  return { ...state, tags: payload, errorMessage: '' }
+}
+
+const getNewCategoryInputOnChangeState = (state, payload) => {
+  return { ...state, newCategoryInput: payload, errorMessage: '' }
 }
 
 const reducer = (state, action) => {
@@ -27,22 +45,59 @@ const reducer = (state, action) => {
       return getContentOnChangeState(state, action.payload)
     case CATEGORY_ON_CHANGE:
       return getCategoryOnChangeState(state, action.payload)
+    case TAGS_ON_CHANGE:
+      return getTagsOnChangeState(state, action.payload)
+    case NEW_CATEGORY_INPUT_ON_CHANGE:
+      return getNewCategoryInputOnChangeState(state, action.payload)
     default:
       return state
   }
 }
 
 const Write = () => {
+  const { createPost, updatePost, categories, createCategory } = useContext(PostContext)
   const existsArticle = useLocation().state
-  const [state, dispatch] = useReducer(reducer, { id: existsArticle?.id, title: existsArticle?.title || 'New Article', content: existsArticle?.content || '# New Article', category: existsArticle?.category || 'Life', status: existsArticle?.status || 'draft', errorMessage: '' })
+  const [state, dispatch] = useReducer(reducer, { id: existsArticle?.id, title: existsArticle?.title || 'New Article', content: existsArticle?.content || '# New Article', category: existsArticle?.category || categories[0].name, tags: existsArticle?.tags.map(item => `#${item.name}`).join(' ') || '', status: existsArticle?.status || 'draft', errorMessage: '', newCategoryInput: '', isAddingNewCategory: false })
+
   const navigate = useNavigate()
   const textareaRef = useRef(null)
   const handleChange = (event) => {
     dispatch({ type: CONTENT_ON_CHANGE, payload: event })
   }
+
   const handleCheckboxChange = (e) => {
     dispatch({ type: CATEGORY_ON_CHANGE, payload: e.target.value })
   }
+
+  const handleTagsChange = (event) => {
+    dispatch({ type: TAGS_ON_CHANGE, payload: event.target.value })
+  }
+
+  const handleNewCategoryInputChange = (e) => {
+    dispatch({ type: NEW_CATEGORY_INPUT_ON_CHANGE, payload: e.target.value })
+  }
+
+  const handleConfirmNewCategory = async () => {
+    try {
+      // Call your API to create a new category
+      const newCategory = await createCategory(state.newCategoryInput)
+
+      // If creation is successful, update the category list and selected category
+      dispatch({
+        type: CATEGORY_ON_CHANGE,
+        payload: newCategory.data.name
+      })
+      // Clear new category input
+      dispatch({
+        type: NEW_CATEGORY_INPUT_ON_CHANGE,
+        payload: ''
+      })
+    } catch (err) {
+      console.error(err)
+      // Handle error...
+    }
+  }
+
   useEffect(() => {
     // dynamically resize textarea
     const textarea = textareaRef.current
@@ -61,18 +116,24 @@ const Write = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    const tagsArray = state.tags.length
+      ? state.tags.split(' ')
+        .filter(tag => tag.startsWith('#'))
+        .map(tag => tag.slice(1))
+      : []
+
     try {
-      const response = existsArticle
-        ? await axios.put(`/posts/${state.id}`, { ...state, status: e.target.name })
-        : await axios.post('/posts', { ...state, status: e.target.name })
-      navigate(`/post/${response.data.id}`)
+      const response = existsArticle ? await updatePost(state.id, { ...state, tags: tagsArray, status: e.target.dataset.name }) : await createPost({ ...state, tags: tagsArray, status: e.target.dataset.name })
+
+      navigate(`/post/${response.data.slug}`)
     } catch (err) {
       console.log(err)
     }
   }
 
   return (
-    <div className='mt-5 flex gap-5'>
+    <div className='write mt-5 flex gap-5'>
       <div className='content grow-5 flex flex-col gap-5'>
         <textarea
           ref={textareaRef}
@@ -90,40 +151,58 @@ const Write = () => {
             previewOptions={{
               rehypePlugins: [[rehypeSanitize]]
             }}
+            className='md-editor'
           />
         </div>
-      </div>
-      <div className='menu grow-2 flex flex-col gap-5'>
-        <div className='item grow-1 flex flex-col justify-between'>
-          <h1 className='text-2xl'>Publish</h1>
+        <div>
+          <input
+            type='text'
+            value={state.tags}
+            onChange={handleTagsChange}
+            placeholder='Enter tags separated by space'
+            className='w-full'
+          />
+        </div>
+        <div className='item grow-1 flex flex-col justify-between gap-2'>
+          <h1 className='text-xl'>文章類別</h1>
+          <select name='category' value={state.category} onChange={handleCheckboxChange}>
+            {categories.map((category) => (
+              <option key={category.id} value={category.name}>
+                {category.name}
+              </option>
+            ))}
+            <option value='add-new'>新增分類</option>
+          </select>
+          {state.isAddingNewCategory && (
+            <>
+              <input
+                type='text'
+                value={state.newCategoryInput}
+                onChange={handleNewCategoryInputChange}
+                placeholder='輸入分類名稱'
+                className='w-full'
+              />
+              <button
+                className='border-2 border-transparent py-1 px-2 bg-sky-200'
+                onClick={handleConfirmNewCategory}
+              >
+                確定
+              </button>
+            </>
+          )}
+        </div>
+        <div className='item grow-1 flex flex-col justify-between gap-2'>
+          <h1 className='text-xl'>狀態</h1>
           <span>
-            <b>Status:</b> Draft
+            {state.status === 'published' ? '已發佈' : '草稿'}
           </span>
-          <span>
-            <b>Visibility:</b> Public
-          </span>
-          <div className='buttons flex justify-between'>
-            <button className='border-2 border-transparent py-1 px-2 bg-sky-200' name='draft' onClick={handleSubmit}>Save as a draft</button>
-            <button className='border-2 border-transparent py-1 px-2 bg-sky-200' name='published' onClick={handleSubmit}>Publish</button>
+          <div className='buttons flex justify-between my-5'>
+            <div className='border-2 border-transparent py-1 underline cursor-pointer hover:no-underline' data-name='draft' onClick={handleSubmit}>儲存為草稿</div>
+            <div className='border-2 border-transparent py-1 px-2 bg-sky-200 cursor-pointer rounded-full hover:bg-sky-500 hover:text-white' data-name='published' onClick={handleSubmit}>公開發佈</div>
           </div>
         </div>
-        <div className='item grow-1 flex flex-col justify-between'>
-          <h1 className='text-2xl'>Categories</h1>
-          <div className='flex items-center gap-1'>
-            <input type='radio' checked={state.category === 'life'} name='category' id='life' value='life' onChange={handleCheckboxChange} />
-            <label htmlFor='life'>Life</label>
-          </div>
-          <div className='flex items-center gap-1'>
-            <input type='radio' checked={state.category === 'learning'} name='category' id='learning' value='learning' onChange={handleCheckboxChange} />
-            <label htmlFor='learning'>Learning</label>
-          </div>
-          <div className='flex items-center gap-1'>
-            <input type='radio' checked={state.category === 'work'} name='category' id='work' value='work' onChange={handleCheckboxChange} />
-            <label htmlFor='work'>Work</label>
-          </div>
-        </div>
-      </div>
 
+      </div>
     </div>
   )
 }

@@ -1,29 +1,62 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AuthContext from '../context/AuthContext'
+import PostContext from '../context/PostContext'
 
 const Navbar = () => {
   const { currentUser, logout } = useContext(AuthContext)
+  const { categories } = useContext(PostContext)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
 
   return (
     <div>
-      <div className='flex justify-between items-center py-2.5'>
-        <div><Link to='/'>Logo</Link></div>
-        <div className='flex items-center gap-2.5'>
-          <Link to='/?cat=life'>
-            <h6 className='text-base font-light'>Life</h6>
-          </Link>
-          <Link to='/?cat=work'>
-            <h6 className='text-base font-light'>Work</h6>
-          </Link>
-          <Link to='/?cat=learning'>
-            <h6 className='text-base font-light'>Learning</h6>
-          </Link>
-          <span className='cursor-pointer'>{currentUser?.name}</span>
-          {currentUser ? <span className='cursor-pointer' onClick={logout}>Logout</span> : <Link className='cursor-pointer' to='/login'>Login</Link>}
-          <span className='bg-sky-200 h-10 w-10 rounded-full font-light flex justify-center items-center hover:text-sky-700 hover:bg-transparent'>
-            <Link to='/write'>Write</Link>
-          </span>
+      <div className='fixed top-0 left-0 w-screen z-10 py-5 shadow-md'>
+        <div className='flex justify-between items-center max-w-md mx-auto'>
+          <div className='logo'>
+            <Link to='/'>
+              WeiWei
+            </Link>
+          </div>
+          <div className='flex items-center gap-5'>
+            <Link to='/list'>
+              <h6>最新文章</h6>
+            </Link>
+            <div onMouseEnter={() => setDropdownOpen(true)} onMouseLeave={() => setDropdownOpen(false)}>
+              <Link to='/categories' className=' cursor-pointer'>
+                <h6>文章類別</h6>
+              </Link>
+              {dropdownOpen && (
+                <div className='dropdown absolute bg-white text-black shadow-md w-48 rounded-lg'>
+                  {categories.map((category) => (
+                    <Link key={category.id} to={`categories/${category.name}`} className='block px-4 py-2 hover:bg-orange-200' onClick={() => setDropdownOpen(false)}>
+                      {category.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+            <Link to='/tags' className=' cursor-pointer'>
+              <h6>標籤分類</h6>
+            </Link>
+            <h6>關於</h6>
+
+            {currentUser && (
+              <>
+                <span className='cursor-pointer'>{currentUser?.name}</span>
+                <span className='material-symbols-sharp cursor-pointer' onClick={logout}>
+                  logout
+                </span>
+                <span className='font-light hover:text-sky-700'>
+                  <Link className='flex justify-center items-center' to='/write'>
+                    <span className='material-symbols-sharp'>
+                      <span className='material-symbols-sharp'>
+                        post_add
+                      </span>
+                    </span>
+                  </Link>
+                </span>
+              </>)}
+          </div>
         </div>
       </div>
     </div>

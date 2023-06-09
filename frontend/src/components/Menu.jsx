@@ -9,7 +9,7 @@ const Menu = ({ category, currentPostId }) => {
     const fetchPosts = async () => {
       try {
         const res = await axios.get(`/posts/?cat=${category}`)
-        res.data = res.data.filter(post => post.id !== currentPostId)
+        res.data = res.data.filter(post => post.id !== currentPostId).slice(0, 3)
         setPosts(res.data)
       } catch (err) {
         console.log(err)
@@ -18,19 +18,19 @@ const Menu = ({ category, currentPostId }) => {
     fetchPosts()
   }, [category, currentPostId])
   return (
-    <div className='menu grow-2 flex flex-col gap-6'>
-      <h1>Other posts</h1>
-      {posts.map(post => (
-        <div className='post flex flex-col gap-2.5' key={post.id}>
-          <div className='w-full'>
-            <img className='h-36 w-full object-cover' src={post.img} alt='' />
-          </div>
-          <h2 className='text-3xl text-gray-700'>{post.title}</h2>
-          <Link to={`/post/${post.id}`}>
-            <button className='w-max py-2.5 text-gray-400 hover:text-black'>Read more...</button>
-          </Link>
-        </div>
-      ))}
+    <div className='menu flex flex-col gap-6'>
+      <h1 className='text-2xl'>
+        相關文章
+      </h1>
+      <ol>
+        {posts.map((post, index) => (
+          <li className='post flex flex-col pl-5' key={post.id}>
+            <Link to={`/post/${post.slug}`}>
+              <h2 className='text-xl text-orange-800 my-1'>{index + 1}. {post.title}</h2>
+            </Link>
+          </li>
+        ))}
+      </ol>
     </div>
   )
 }

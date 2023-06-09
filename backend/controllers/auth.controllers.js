@@ -1,5 +1,4 @@
-const db = require('../models')
-const User = db.User
+const { User } = require('../models')
 const bcrypt = require('bcryptjs')
 // JWT
 const jwt = require('jsonwebtoken')
@@ -42,10 +41,11 @@ const authController = {
     return res.cookie('access_token', token, { httpOnly: true }).json({ message: 'ok', user: { id: user.id, name: user.name, email: user.email } })
   },
   logout: (req, res) => {
-    return res.clearCookie('access_token', {
-      sameSite: 'none',
-      secure: true
-    }).status(200).json({ message: 'User has been logged out' })
+    return res.clearCookie('access_token').status(200).json({ message: 'User has been logged out' })
+  },
+  getCurrentUser: (req, res) => {
+    const { id, name, email } = req.user.dataValues
+    return res.status(200).json({ id, name, email })
   }
 }
 

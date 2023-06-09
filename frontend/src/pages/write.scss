@@ -1,0 +1,15 @@
+.write {
+  .wmde-markdown {
+      display: flex;
+      flex-direction: column;
+      background-color: inherit;
+  
+      .code-line {
+        background-color: inherit;
+  
+        .token {
+          background-color: inherit;
+        }
+      }
+    }
+}

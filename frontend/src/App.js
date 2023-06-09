@@ -1,17 +1,22 @@
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
 import Home from './pages/Home'
+import List from './pages/List'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Single from './pages/Single'
 import Write from './pages/Write'
+import Categories from './pages/Categories'
+import Tags from './pages/Tags'
 import Navbar from './components/Navbar'
-import Footer from './components/Footer'  
+import Footer from './components/Footer'
 
 const Layout = () => {
   return (
     <>
       <Navbar />
-      <Outlet />
+      <div className='pt-32'>
+        <Outlet />
+      </div>
       <Footer />
     </>
   )
@@ -20,40 +25,60 @@ const Layout = () => {
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Layout/>,
+    element: <Layout />,
     children: [
       {
         path: '/',
-        element: <Home/>
+        element: <Home />
       },
       {
-        path: '/post/:postId',
-        element: <Single/>
+        path: '/list',
+        element: <List />
+      },
+      {
+        path: '/post/:slug',
+        element: <Single />
       },
       {
         path: '/write',
-        element: <Write/>
+        element: <Write />
+      },
+      {
+        path: '/categories',
+        element: <Categories />
+      },
+      {
+        path: '/categories/:categoryName',
+        element: <List />
+      },
+      {
+        path: '/tags',
+        element: <Tags />
+      },
+      {
+        path: '/tags/:tagName',
+        element: <List />
       }
     ]
   },
   {
     path: '/login',
-    element: <Login/>
+    element: <Login />
   },
   {
     path: '/register',
-    element: <Register/>
+    element: <Register />
   }
 ])
 
-function App() {
+function App () {
   return (
     <div className='flex justify-center'>
-      <div className="w-9/12 max-w-7xl">
+      <div className='max-w-md w-full'>
         <RouterProvider router={router} />
-      </div>  
+      </div>
     </div>
-  );
+  )
 }
 
 export default App

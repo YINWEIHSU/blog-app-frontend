@@ -1,5 +1,4 @@
-const db = require('../models')
-const User = db.User
+const { User } = require('../models')
 
 const userController = {
   getUser: async (req, res) => {
@@ -26,7 +25,6 @@ const userController = {
     }
     await user.update({
       name,
-      email,
       password
     })
     return res.status(200).json(user)
