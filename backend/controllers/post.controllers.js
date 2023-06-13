@@ -4,31 +4,34 @@ const { generateSlug } = require('../common/utils')
 
 const postController = {
   getPosts: async (req, res) => {
-    const query = `
-    SELECT posts.id, posts.title, posts.content, posts.img, posts.status, posts.created_at, posts.updated_at, posts.slug, categories.id as category_id, GROUP_CONCAT(CONCAT(tags.id, '::', tags.name)) as tags 
-    FROM posts 
-    JOIN categories ON posts.category_id = categories.id 
-    LEFT JOIN postTags ON posts.id = postTags.postId 
-    LEFT JOIN tags ON postTags.tagId = tags.id 
-    GROUP BY posts.id 
-    ORDER BY posts.created_at DESC
-    `
-    const [results] = await db.sequelize.query(query)
-    let posts = results.map(post => ({
-      ...post,
-      tags: post.tags
-        ? post.tags.split(',').map(tag => {
-          const [id, name] = tag.split('::')
-          return { id, name }
+    const posts = await Post.findAll({
+      attributes: ['id', 'title', 'content', 'img', 'status', 'createdAt', 'updatedAt', 'slug', 'category_id'],
+      include: [
+        {
+          model: Tag,
+          through: { attributes: [] }, // 這將排除 join table 的所有屬性
+          attributes: ['id', 'name']
+        }
+      ],
+      order: [['createdAt', 'DESC']]
+    })
+
+    let results = posts.map(post => {
+      post = {
+        ...post.dataValues,
+        tags: post.dataValues.Tags.map(tag => {
+          return { tag: tag.dataValues.id, name: tag.dataValues.name }
         })
-        : []
-    }))
+      }
+      delete post.Tags
+      return post
+    })
 
     if (!req.user) {
-      posts = posts.filter(post => post.status === 'published')
+      results = results.filter(post => post.status === 'published')
     }
 
-    return res.status(200).json(posts)
+    return res.status(200).json(results)
   },
   getPost: async (req, res) => {
     const slug = req.params.slug
