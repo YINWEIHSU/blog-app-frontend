@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react'
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import Menu from '../components/Menu'
 import moment from 'moment'
 import AuthContext from '../context/AuthContext'
@@ -9,7 +9,6 @@ import './single.scss'
 
 const Single = () => {
   const [post, setPost] = useState({})
-  const location = useLocation()
   const navigate = useNavigate()
   const { slug } = useParams()
   const { currentUser } = useContext(AuthContext)

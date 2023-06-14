@@ -18,9 +18,9 @@ const postController = {
 
     let results = posts.map(post => {
       post = {
-        ...post.dataValues,
-        tags: post.dataValues.Tags.map(tag => {
-          return { tag: tag.dataValues.id, name: tag.dataValues.name }
+        ...post,
+        tags: post.Tags.map(tag => {
+          return { id: tag.id, name: tag.name }
         })
       }
       delete post.Tags
@@ -68,14 +68,14 @@ const postController = {
   createPost: async (req, res) => {
     const { title, content, category, tags, status } = req.body
 
-    const userId = req.user.dataValues.id
+    const userId = req.user.id
     const categoryData = await Category.findOne({ where: { name: category } })
     const post = await Post.create({
       title,
       content,
       status,
       UserId: userId,
-      CategoryId: categoryData.dataValues.id
+      CategoryId: categoryData.id
     })
 
     const slug = generateSlug(title, post.id)
@@ -83,7 +83,7 @@ const postController = {
 
     const tagPromises = tags.map(tag => Tag.findOrCreate({ where: { name: tag } }))
     const tagObjects = await Promise.all(tagPromises)
-    const newTagIds = tagObjects.map(tagObject => tagObject[0].dataValues.id)
+    const newTagIds = tagObjects.map(tagObject => tagObject[0].id)
 
     // Tags to be added
     const addPromises = newTagIds.map(tagId => PostTag.create({ postId: post.id, tagId }))
@@ -105,15 +105,15 @@ const postController = {
       content,
       status,
       slug: generateSlug(title, id),
-      CategoryId: categoryData.dataValues.id
+      CategoryId: categoryData.id
     })
 
     const tagPromises = tags.map(tag => Tag.findOrCreate({ where: { name: tag } }))
     const tagObjects = await Promise.all(tagPromises)
-    const newTagIds = tagObjects.map(tagObject => tagObject[0].dataValues.id)
+    const newTagIds = tagObjects.map(tagObject => tagObject[0].id)
 
     const postTags = await PostTag.findAll({ where: { postId: id } })
-    const oldTagIds = postTags.map(postTag => postTag.dataValues.tagId)
+    const oldTagIds = postTags.map(postTag => postTag.tagId)
 
     // Tags to be removed
     const tagIdsToRemove = oldTagIds.filter(oldTagId => !newTagIds.includes(oldTagId))
@@ -141,9 +141,9 @@ const postController = {
     return res.status(200).json(post)
   },
   deletePost: async (req, res) => {
-    const user = req.user.dataValues
+    const user = req.user
     const postData = await Post.findOne({ where: { slug: req.params.slug } })
-    const post = postData.dataValues
+    const post = postData
     if (!post) {
       return res.status(404).json({ message: 'Post not found' })
     }

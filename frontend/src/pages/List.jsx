@@ -24,7 +24,7 @@ const List = () => {
     filteredPosts = posts.filter(post => post.category_id === category.id)
   }
   if (tag) {
-    filteredPosts = posts.filter(post => post.tags.some(postTag => postTag.id === tag.id.toString()))
+    filteredPosts = posts.filter(post => post.tags.some(postTag => postTag.id === tag.id))
   }
 
   const [currentPage, setCurrentPage] = useState(1)
@@ -32,7 +32,7 @@ const List = () => {
 
   const groupPostsByYear = (posts) => {
     return posts.reduce((groups, post) => {
-      const date = new Date(post.created_at)
+      const date = new Date(post.createdAt)
       const yearKey = `${date.getFullYear()}`
       if (!groups[yearKey]) {
         groups[yearKey] = []
@@ -42,7 +42,7 @@ const List = () => {
     }, {})
   }
 
-  const paginatedPosts = filteredPosts.slice((currentPage - 1) * postsPerPage, currentPage * postsPerPage)
+  const paginatedPosts = filteredPosts?.slice((currentPage - 1) * postsPerPage, currentPage * postsPerPage)
 
   const postsByYear = groupPostsByYear(paginatedPosts)
 
@@ -61,7 +61,7 @@ const List = () => {
               <Link key={post.id} to={`/post/${post.slug}`}>
                 <div className='archive-post border-l-2 py-2 px-5 flex gap-3 text-lg hover:border-l-4 hover:border-amber-600' key={post.id}>
                   <span className='archive-post-time whitespace-nowrap'>
-                    {post.created_at.slice(5, 10)}
+                    {post.createdAt?.slice(5, 10)}
                   </span>
                   <span className='archive-post-title text-amber-600 hover:text-amber-800'>
                     {post.status === 'draft' ? '(草稿) ' : ''}

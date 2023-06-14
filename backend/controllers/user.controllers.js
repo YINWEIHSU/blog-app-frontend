@@ -11,7 +11,7 @@ const userController = {
   },
   updateUser: async (req, res) => {
     const { id } = req.params
-    const currentUserId = req.user.dataValues.id
+    const currentUserId = req.user.id
     if (Number(id) !== currentUserId) {
       return res.status(403).json({ message: 'You are not authorized to do this' })
     }

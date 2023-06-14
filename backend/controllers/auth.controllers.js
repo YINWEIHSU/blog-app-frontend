@@ -44,7 +44,7 @@ const authController = {
     return res.clearCookie('access_token').status(200).json({ message: 'User has been logged out' })
   },
   getCurrentUser: (req, res) => {
-    const { id, name, email } = req.user.dataValues
+    const { id, name, email } = req.user
     return res.status(200).json({ id, name, email })
   }
 }
