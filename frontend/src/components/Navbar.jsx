@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AuthContext from '../context/AuthContext'
 import PostContext from '../context/PostContext'
+import './navbar.scss'
 
 const Navbar = () => {
   const { currentUser, logout } = useContext(AuthContext)
@@ -18,11 +19,11 @@ const Navbar = () => {
             </Link>
           </div>
           <div className='flex items-center gap-5'>
-            <Link to='/list'>
+            <Link to='/list' className='nav-item'>
               <h6>最新文章</h6>
             </Link>
             <div onMouseEnter={() => setDropdownOpen(true)} onMouseLeave={() => setDropdownOpen(false)}>
-              <Link to='/categories' className=' cursor-pointer'>
+              <Link to='/categories' className='nav-item'>
                 <h6>文章類別</h6>
               </Link>
               {dropdownOpen && (
@@ -35,10 +36,12 @@ const Navbar = () => {
                 </div>
               )}
             </div>
-            <Link to='/tags' className=' cursor-pointer'>
+            <Link to='/tags' className='nav-item'>
               <h6>標籤分類</h6>
             </Link>
-            <h6>關於</h6>
+            <Link to='/#' className='nav-item'>
+              <h6>關於</h6>
+            </Link>
 
             {currentUser && (
               <>
