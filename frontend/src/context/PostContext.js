@@ -36,6 +36,8 @@ const PostContextProvider = ({ children }) => {
   const deletePost = async (slug) => {
     await axios.delete(`/posts/${slug}`)
     getPosts()
+    getCategories()
+    getTags()
   }
 
   const getCategories = async () => {

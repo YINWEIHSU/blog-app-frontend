@@ -4,8 +4,8 @@ const { generateSlug } = require('../common/utils')
 
 const postController = {
   getPosts: async (req, res) => {
-    const posts = await Post.findAll({
-      attributes: ['id', 'title', 'content', 'img', 'status', 'createdAt', 'updatedAt', 'slug', 'category_id'],
+    const posts = await Post.cache('all').findAll({
+      attributes: ['id', 'title', 'content', 'status', 'createdAt', 'updatedAt', 'slug', 'category_id'],
       include: [
         {
           model: Tag,
@@ -17,6 +17,10 @@ const postController = {
     })
 
     let results = posts.map(post => {
+      // handle post from db
+      if (post.dataValues) {
+        post = post.dataValues
+      }
       post = {
         ...post,
         tags: post.Tags.map(tag => {
@@ -24,18 +28,18 @@ const postController = {
         })
       }
       delete post.Tags
+
       return post
     })
 
     if (!req.user) {
       results = results.filter(post => post.status === 'published')
     }
-
     return res.status(200).json(results)
   },
   getPost: async (req, res) => {
     const slug = req.params.slug
-    const post = await Post.findOne({
+    const post = await Post.cache(req.params.slug).findOne({
       where: { slug },
       include: [
         { model: User, attributes: ['email'] },
@@ -81,13 +85,18 @@ const postController = {
     const slug = generateSlug(title, post.id)
     await post.update({ slug })
 
-    const tagPromises = tags.map(tag => Tag.findOrCreate({ where: { name: tag } }))
+    const tagPromises = tags.map(tag => Tag.findOrCreate({ where: { name: tag },
+      defaults: { count: 1 } }))
     const tagObjects = await Promise.all(tagPromises)
-    const newTagIds = tagObjects.map(tagObject => tagObject[0].id)
+    const newTagIds = tagObjects.map(tagObject => {
+      tagObject[0].clearCache('all')
+      return tagObject[0].id
+    })
 
     // Tags to be added
     const addPromises = newTagIds.map(tagId => PostTag.create({ postId: post.id, tagId }))
     await Promise.all(addPromises)
+    await post.clearCache('all')
 
     return res.status(201).json(post)
   },
@@ -100,11 +109,14 @@ const postController = {
     if (!post) {
       return res.status(404).json({ message: 'Post not found' })
     }
+    const slug = generateSlug(title, id)
+    await post.clearCache(slug)
+    await post.clearCache('all')
     await post.update({
       title,
       content,
       status,
-      slug: generateSlug(title, id),
+      slug,
       CategoryId: categoryData.id
     })
 
@@ -112,7 +124,7 @@ const postController = {
     const tagObjects = await Promise.all(tagPromises)
     const newTagIds = tagObjects.map(tagObject => tagObject[0].id)
 
-    const postTags = await PostTag.findAll({ where: { postId: id } })
+    const postTags = await PostTag.cache(`all_postId_${id}`).findAll({ where: { postId: id } })
     const oldTagIds = postTags.map(postTag => postTag.tagId)
 
     // Tags to be removed
@@ -122,7 +134,7 @@ const postController = {
       await PostTag.destroy({ where: { postId: id, tagId } })
 
       // find tag
-      const tag = await Tag.findOne({ where: { id: tagId } })
+      const tag = await Tag.findByPk(tagId)
 
       tag.count -= 1
 
@@ -162,12 +174,15 @@ const postController = {
       } else {
         await tag.save()
       }
+      await tag.clearCache('all')
     }
 
     // Remove PostTags
     await PostTag.destroy({ where: { postId: post.id } })
 
     // Finally remove the post
+    await postData.clearCache(post.slug)
+    await postData.clearCache('all')
     await postData.destroy()
 
     return res.status(204).json({ message: 'Post deleted' })

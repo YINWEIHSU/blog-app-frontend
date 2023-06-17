@@ -2,12 +2,12 @@ const { Category } = require('../models')
 
 const categoryController = {
   getCategories: async (req, res) => {
-    const categories = await Category.findAll()
+    const categories = await Category.cache('all').findAll()
     return res.status(200).json(categories)
   },
   createCategory: async (req, res) => {
     const { name } = req.body
-    const categoryExists = await Category.findOne({ where: { name } })
+    const categoryExists = await Category.cache(name).findOne({ where: { name } })
     if (categoryExists) {
       return res.status(400).json({ message: 'Category already exists' })
     }
@@ -20,6 +20,7 @@ const categoryController = {
     if (!category) {
       return res.status(404).json({ message: 'Category not found' })
     }
+    await category.clearCache(name)
     await category.update({ name })
     return res.status(200).json(category)
   },
@@ -28,6 +29,7 @@ const categoryController = {
     if (!category) {
       return res.status(404).json({ message: 'Category not found' })
     }
+    await category.clearCache(category.name)
     await category.destroy()
     return res.status(204).json({ message: 'Category deleted' })
   }

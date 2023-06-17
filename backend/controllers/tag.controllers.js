@@ -2,7 +2,7 @@ const { Tag } = require('../models')
 
 const TagController = {
   getTags: async (req, res) => {
-    const tags = await Tag.findAll()
+    const tags = await Tag.cache('all').findAll()
     return res.status(200).json(tags)
   },
   createTag: async (req, res) => {

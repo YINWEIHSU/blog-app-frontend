@@ -17,7 +17,7 @@ jwtOptions.jwtFromRequest = ExtractJwt.fromExtractors([ExtractJwt.fromAuthHeader
 jwtOptions.secretOrKey = process.env.JWT_SECRET
 
 const strategy = new JwtStrategy(jwtOptions, async function (jwtPayload, next) {
-  const user = await User.findByPk(jwtPayload.id)
+  const user = await User.cache(jwtPayload.id).findOne({ where: { id: jwtPayload.id } })
   if (!user) { return next(null, false) }
   return next(null, user)
 })

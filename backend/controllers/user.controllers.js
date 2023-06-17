@@ -3,7 +3,7 @@ const { User } = require('../models')
 const userController = {
   getUser: async (req, res) => {
     const { id } = req.params
-    const user = await User.findByPk(id)
+    const user = await User.cache(id).findOne({ where: { id }})
     if (!user) {
       return res.status(404).json({ message: 'User not found' })
     }
