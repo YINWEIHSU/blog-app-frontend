@@ -38,12 +38,11 @@ db.Sequelize.Model.findOne = async function () {
   return result
 }
 db.Sequelize.Model.findAll = async function () {
-  
   if (!this.useCache) {
     return findAll.apply(this, arguments)
   }
   let result = ''
-  
+
   // avoid cache when using findOne
   if (this.key) {
     const cacheKey = `${this.name}_${this.key}`
@@ -61,10 +60,9 @@ db.Sequelize.Model.findAll = async function () {
   return result
 }
 
-
 client.on('error', function (error) {
   console.error(error)
-  }
+}
 )
 client.on('connect', function () {
   console.log('Connected to Redis')

@@ -42,7 +42,9 @@ const Navbar = () => {
 
             {currentUser && (
               <>
-                <span className='cursor-pointer'>{currentUser?.name}</span>
+                <Link to={`/user/${currentUser.id}`} className=' cursor-pointer'>
+                  <span>{currentUser?.name}</span>
+                </Link>
                 <span className='material-symbols-sharp cursor-pointer' onClick={logout}>
                   logout
                 </span>

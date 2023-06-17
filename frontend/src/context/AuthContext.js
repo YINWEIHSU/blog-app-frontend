@@ -25,13 +25,17 @@ const AuthContextProvider = ({ children }) => {
     const res = await axios.get('/auth/current_user')
     setCurrentUser(res.data)
   }
+  const updateUser = async (input) => {
+    const res = await axios.put(`/users/update/${input.id}`, input)
+    setCurrentUser(res.data)
+  }
 
   useEffect(() => {
     getCurrentUser()
   }, [])
 
   return (
-    <AuthContext.Provider value={{ currentUser, register, login, logout }}>
+    <AuthContext.Provider value={{ currentUser, getCurrentUser, register, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   )

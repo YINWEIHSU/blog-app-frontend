@@ -85,8 +85,10 @@ const postController = {
     const slug = generateSlug(title, post.id)
     await post.update({ slug })
 
-    const tagPromises = tags.map(tag => Tag.findOrCreate({ where: { name: tag },
-      defaults: { count: 1 } }))
+    const tagPromises = tags.map(tag => Tag.findOrCreate({
+      where: { name: tag },
+      defaults: { count: 1 }
+    }))
     const tagObjects = await Promise.all(tagPromises)
     const newTagIds = tagObjects.map(tagObject => {
       tagObject[0].clearCache('all')

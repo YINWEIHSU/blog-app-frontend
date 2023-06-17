@@ -9,6 +9,7 @@ import Categories from './pages/Categories'
 import Tags from './pages/Tags'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import User from './pages/User'
 
 const Layout = () => {
   return (
@@ -58,6 +59,10 @@ const router = createBrowserRouter([
       {
         path: '/tags/:tagName',
         element: <List />
+      },
+      {
+        path: '/user/:id',
+        element: <User />
       }
     ]
   },
