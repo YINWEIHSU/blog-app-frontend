@@ -44,7 +44,7 @@ const Single = () => {
 
   return (
     <div className='single-page flex justify-between gap-12'>
-      <div data-color-mode='light' className='grow-5 flex flex-col'>
+      <div data-color-mode='light' className='w-full grow-5 flex flex-col'>
         {currentUser && currentUser.email === post.email && (
           <div className='flex gap-1.5 pb-5'>
             <Link className='rounded-full bg-sky-950 text-white flex justify-center items-center p-1 hover:text-sky-950 hover:bg-inherit' to={`/write?edit=${slug}`} state={post}>
@@ -59,7 +59,7 @@ const Single = () => {
             </div>
           </div>
         )}
-        <div className="flex">
+        <div className='flex'>
           <Link to={`/categories/${post.category}`} className='inline-block text-orange-800 hover:text-orange-500'>
             {post.category}
           </Link>
