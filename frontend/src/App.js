@@ -4,7 +4,6 @@ import AuthContext from './context/AuthContext'
 import Home from './pages/Home'
 import List from './pages/List'
 import Login from './pages/Login'
-import Register from './pages/Register'
 import Single from './pages/Single'
 import Write from './pages/Write'
 import Categories from './pages/Categories'
@@ -74,16 +73,16 @@ const router = createBrowserRouter([
       {
         path: '/user/:id',
         element: <RequireAuth><User /></RequireAuth>
+      },
+      {
+        path: '*',
+        element: <h1>Page Not Found</h1>
       }
     ]
   },
   {
     path: '/login',
     element: <Login />
-  },
-  {
-    path: '/register',
-    element: <Register />
   }
 ])
 

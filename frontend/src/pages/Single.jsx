@@ -30,10 +30,13 @@ const Single = () => {
         const data = await getPost(slug)
         if (data.length === 0) {
           navigate('/404')
+          return
         }
         setPost(data)
       } catch (err) {
-        console.log(err)
+        if (err.response.status === 404) {
+          navigate('/404')
+        }
       }
     }
     fetchPost()
@@ -43,7 +46,7 @@ const Single = () => {
     <div className='single-page flex justify-between gap-12'>
       <div data-color-mode='light' className='grow-5 flex flex-col'>
         {currentUser && currentUser.email === post.email && (
-          <div className='flex gap-1.5'>
+          <div className='flex gap-1.5 pb-5'>
             <Link className='rounded-full bg-sky-950 text-white flex justify-center items-center p-1 hover:text-sky-950 hover:bg-inherit' to={`/write?edit=${slug}`} state={post}>
               <span className='material-symbols-sharp bg-inherit'>
                 edit
@@ -56,13 +59,18 @@ const Single = () => {
             </div>
           </div>
         )}
-        <div className='pt-5'>{post.category}</div>
+        <div className="flex">
+          <Link to={`/categories/${post.category}`} className='inline-block text-orange-800 hover:text-orange-500'>
+            {post.category}
+          </Link>
+        </div>
+        <div className='py-2'>{moment(post.createdAt).format('YYYY/MM/DD')}</div>
         <MDEditor.Markdown className='max-w-md' source={post.content} style={{ whiteSpace: 'pre-wrap' }} />
         <div className='flex items-center gap-2.5 text-sm my-8'>
           <img className='w-14 h-14 rounded-full object-cover' src='https://dummyimage.com/1920x1080/9bd1c8/dcdce0' alt='' />
           <div>
             <span className='font-bold'>User</span>
-            <p>Posted {moment(post.updatedAt).fromNow()}</p>
+            <p>Posted {moment(post.createdAt).fromNow()}</p>
           </div>
         </div>
         <div className='mb-8 flex gap-3'>

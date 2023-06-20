@@ -21,7 +21,7 @@ const User = () => {
       navigate('/')
     }
     setEditingUser(currentUser)
-  }, [currentUser])
+  }, [currentUser, id])
 
   const handleInputChange = (event) => {
     setEditingUser({

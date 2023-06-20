@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import AuthContext from '../context/AuthContext'
 
 const Login = () => {
@@ -35,7 +35,6 @@ const Login = () => {
         <input className='p-2.5 border-b-2' type='password' placeholder='password' name='password' onChange={handleChange} />
         <button className='p-2.5 bg-sky-400 cursor-pointer text-white' onClick={handleSubmit}>Login</button>
         {error && <p className='text-xs text-center text-red-700'>{error}</p>}
-        <span className='text-xs text-center'>Don't have an account? <Link to='/register' className='text-blue-500'>Register</Link></span>
       </form>
     </div>
   )
