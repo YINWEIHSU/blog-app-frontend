@@ -91,15 +91,14 @@ const postController = {
       if (!created) {
         tagObject.count += 1
         await tagObject.save()
-        tagObject.clearCache('all')
       }
       // exists tag
       await PostTag.create({ postId: post.id, tagId: tagObject.id })
-      await tagObject.clearCache('all')
       return tagObject
     })
     await Promise.all(tagPromises)
-    await post.clearCache('all')
+    await Tag.clearCache('all')
+    await Post.clearCache('all')
 
     return res.status(201).json(post)
   },
@@ -113,8 +112,8 @@ const postController = {
       return res.status(404).json({ message: 'Post not found' })
     }
     const slug = generateSlug(title, id)
-    await post.clearCache(slug)
-    await post.clearCache('all')
+    await Post.clearCache(slug)
+    await Post.clearCache('all')
     await post.update({
       title,
       content,
@@ -133,7 +132,6 @@ const postController = {
         if (!created) {
           tagObject.count += 1
           await tagObject.save()
-          await tagObject.clearCache('all')
         }
         // exists tag
         await PostTag.create({ postId: id, tagId: tagObject.id })
@@ -153,7 +151,6 @@ const postController = {
       const tag = await Tag.findByPk(tagId)
 
       tag.count -= 1
-      await tag.clearCache('all')
 
       if (tag.count <= 0) {
         await tag.destroy()
@@ -161,6 +158,7 @@ const postController = {
         await tag.save()
       }
     })
+    await Tag.clearCache('all')
     await Promise.all(removePromises)
     return res.status(200).json(post)
   },
@@ -186,15 +184,14 @@ const postController = {
       } else {
         await tag.save()
       }
-      await tag.clearCache('all')
     }
-
+    await Tag.clearCache('all')
     // Remove PostTags
     await PostTag.destroy({ where: { postId: post.id } })
 
     // Finally remove the post
-    await postData.clearCache(post.slug)
-    await postData.clearCache('all')
+    await Post.clearCache(post.slug)
+    await Post.clearCache('all')
     await postData.destroy()
 
     return res.status(204).json({ message: 'Post deleted' })

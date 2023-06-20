@@ -29,7 +29,7 @@ const userController = {
       updateData.password = bcrypt.hashSync(newPassword, bcrypt.genSaltSync(10), null)
     }
     await user.update(updateData)
-    await user.clearCache(id)
+    await User.clearCache(id)
     return res.status(200).json(user)
   }
 }

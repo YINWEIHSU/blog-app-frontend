@@ -12,7 +12,7 @@ const categoryController = {
       return res.status(400).json({ message: 'Category already exists' })
     }
     const category = await Category.create({ name })
-    category.clearCache('all')
+    await Category.clearCache('all')
     return res.status(201).json(category)
   },
   updateCategory: async (req, res) => {
@@ -21,7 +21,7 @@ const categoryController = {
     if (!category) {
       return res.status(404).json({ message: 'Category not found' })
     }
-    await category.clearCache(name)
+    await Category.clearCache(name)
     await category.update({ name })
     return res.status(200).json(category)
   },
@@ -30,7 +30,7 @@ const categoryController = {
     if (!category) {
       return res.status(404).json({ message: 'Category not found' })
     }
-    await category.clearCache(category.name)
+    await Category.clearCache(category.name)
     await category.destroy()
     return res.status(204).json({ message: 'Category deleted' })
   }
