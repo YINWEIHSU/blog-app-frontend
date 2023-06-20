@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouterProvider, Outlet, useNavigate } from 'react-router-dom'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import AuthContext from './context/AuthContext'
 import Home from './pages/Home'
 import List from './pages/List'
@@ -15,10 +15,11 @@ import User from './pages/User'
 function RequireAuth ({ children }) {
   const { currentUser } = useContext(AuthContext)
   const navigate = useNavigate()
-  if (!currentUser) {
-    navigate('/')
-    return
-  }
+  useEffect(() => {
+    if (!currentUser) {
+      navigate('/')
+    }
+  }, [currentUser])
   return children
 }
 const Layout = () => {

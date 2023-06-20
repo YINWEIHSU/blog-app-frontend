@@ -4,7 +4,6 @@ import PostContext from '../context/PostContext'
 
 const Tags = () => {
   const { tags } = useContext(PostContext)
-  console.log(tags)
 
   return (
     <div className='flex flex-col items-center'>
