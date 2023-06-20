@@ -72,7 +72,7 @@ const Single = () => {
             </Link>
           ))}
         </div>
-        <Menu category={post.category} currentPostId={post.id} />
+        <Menu currentPost={post} />
         <nav className='flex justify-between py-5 text-lg my-8'>
           <div>
             {index > 0 && (

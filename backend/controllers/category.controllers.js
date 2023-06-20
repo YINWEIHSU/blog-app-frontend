@@ -12,6 +12,7 @@ const categoryController = {
       return res.status(400).json({ message: 'Category already exists' })
     }
     const category = await Category.create({ name })
+    category.clearCache('all')
     return res.status(201).json(category)
   },
   updateCategory: async (req, res) => {

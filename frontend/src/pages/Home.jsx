@@ -13,6 +13,7 @@ const Home = () => {
   return (
     <div className='home'>
       <div data-color-mode='light' className='mt-12 flex flex-col gap-20'>
+        {!posts.length && <div>沒有文章</div>}
         {paginatedPosts.map(post => (
           <div className='flex flex-col gap-10 border-b-2' key={post.id}>
             <MDEditor.Markdown className='mde-ellipsis' source={post.content} style={{ whiteSpace: 'pre-wrap' }} />

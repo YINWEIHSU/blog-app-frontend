@@ -50,6 +50,7 @@ const List = () => {
     <section id='archive' className='archive'>
       {category && <div>文章類別：{category.name}</div>}
       {tag && <div>標籤：{tag.name}</div>}
+      {!filteredPosts.length && <div>沒有文章</div>}
       {Object.entries(postsByYear)
         .sort(([a], [b]) => b - a)
         .map(([year, posts]) => (

@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useRef, useContext } from 'react'
+import React, { useState, useReducer, useEffect, useRef, useContext } from 'react'
 import PostContext from '../context/PostContext'
 import MDEditor from '@uiw/react-md-editor'
 import rehypeSanitize from 'rehype-sanitize'
@@ -55,17 +55,19 @@ const reducer = (state, action) => {
 }
 
 const Write = () => {
+  const [noCategoryWarning, setNoCategoryWarning] = useState(false)
   const { createPost, updatePost, categories, createCategory } = useContext(PostContext)
   const existsArticle = useLocation().state
-  const [state, dispatch] = useReducer(reducer, { id: existsArticle?.id, title: existsArticle?.title || 'New Article', content: existsArticle?.content || '# New Article', category: existsArticle?.category || categories[0].name, tags: existsArticle?.tags.map(item => `#${item.name}`).join(' ') || '', status: existsArticle?.status || 'draft', errorMessage: '', newCategoryInput: '', isAddingNewCategory: false })
+  const [state, dispatch] = useReducer(reducer, { id: existsArticle?.id, title: existsArticle?.title || 'New Article', content: existsArticle?.content || '# New Article', category: existsArticle?.category || 'choose', tags: existsArticle?.tags.map(item => `#${item.name}`).join(' ') || '', status: existsArticle?.status || 'draft', errorMessage: '', newCategoryInput: '', isAddingNewCategory: false })
 
   const navigate = useNavigate()
   const textareaRef = useRef(null)
   const handleChange = (event) => {
+    setNoCategoryWarning(false)
     dispatch({ type: CONTENT_ON_CHANGE, payload: event })
   }
 
-  const handleCheckboxChange = (e) => {
+  const handleSelectChange = (e) => {
     dispatch({ type: CATEGORY_ON_CHANGE, payload: e.target.value })
   }
 
@@ -94,7 +96,6 @@ const Write = () => {
       })
     } catch (err) {
       console.error(err)
-      // Handle error...
     }
   }
 
@@ -116,6 +117,12 @@ const Write = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    // 必須選擇分類
+    if (state.category === 'choose') {
+      setNoCategoryWarning(true)
+      return
+    }
 
     const tagsArray = state.tags.length
       ? state.tags.split(' ')
@@ -165,7 +172,8 @@ const Write = () => {
         </div>
         <div className='item grow-1 flex flex-col justify-between gap-2'>
           <h1 className='text-xl'>文章類別</h1>
-          <select name='category' value={state.category} onChange={handleCheckboxChange}>
+          <select name='category' value={state.category} onChange={handleSelectChange}>
+            <option value='choose' disabled>選擇分類</option>
             {categories.map((category) => (
               <option key={category.id} value={category.name}>
                 {category.name}
@@ -173,6 +181,7 @@ const Write = () => {
             ))}
             <option value='add-new'>新增分類</option>
           </select>
+          {noCategoryWarning && (<div className='text-red-500'>請選擇分類</div>)}
           {state.isAddingNewCategory && (
             <>
               <input
