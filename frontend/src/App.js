@@ -1,4 +1,6 @@
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, Outlet, useNavigate } from 'react-router-dom'
+import { useContext } from 'react'
+import AuthContext from './context/AuthContext'
 import Home from './pages/Home'
 import List from './pages/List'
 import Login from './pages/Login'
@@ -11,6 +13,15 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import User from './pages/User'
 
+function RequireAuth ({ children }) {
+  const { currentUser } = useContext(AuthContext)
+  const navigate = useNavigate()
+  if (!currentUser) {
+    navigate('/')
+    return
+  }
+  return children
+}
 const Layout = () => {
   return (
     <>
@@ -42,7 +53,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/write',
-        element: <Write />
+        element: <RequireAuth><Write /></RequireAuth>
       },
       {
         path: '/categories',
@@ -62,7 +73,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/user/:id',
-        element: <User />
+        element: <RequireAuth><User /></RequireAuth>
       }
     ]
   },
