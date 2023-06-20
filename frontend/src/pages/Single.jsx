@@ -57,7 +57,7 @@ const Single = () => {
           </div>
         )}
         <div className='pt-5'>{post.category}</div>
-        <MDEditor.Markdown source={post.content} style={{ whiteSpace: 'pre-wrap' }} />
+        <MDEditor.Markdown className='max-w-md' source={post.content} style={{ whiteSpace: 'pre-wrap' }} />
         <div className='flex items-center gap-2.5 text-sm my-8'>
           <img className='w-14 h-14 rounded-full object-cover' src='https://dummyimage.com/1920x1080/9bd1c8/dcdce0' alt='' />
           <div>

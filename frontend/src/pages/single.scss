@@ -5,8 +5,20 @@
     background-color: inherit;
     .code-line {
       background-color: inherit;
+      white-space: pre-wrap;
       .token {
         background-color: inherit;
+      }
+    }
+    ol {
+      li {
+        list-style: decimal;
+      }
+    }
+    
+    ul {
+      li {
+        list-style: disc;
       }
     }
   }

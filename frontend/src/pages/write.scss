@@ -4,11 +4,22 @@
       flex-direction: column;
       background-color: inherit;
   
-      .code-line {
+      code {
         background-color: inherit;
   
-        .token {
+        span {
           background-color: inherit;
+        }
+      }
+      ol {
+        li {
+          list-style: decimal;
+        }
+      }
+
+      ul {
+        li {
+          list-style: disc;
         }
       }
     }
