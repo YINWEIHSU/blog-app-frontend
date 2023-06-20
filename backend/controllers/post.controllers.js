@@ -85,19 +85,20 @@ const postController = {
     const slug = generateSlug(title, post.id)
     await post.update({ slug })
 
-    const tagPromises = tags.map(tag => Tag.findOrCreate({
-      where: { name: tag },
-      defaults: { count: 1 }
-    }))
-    const tagObjects = await Promise.all(tagPromises)
-    const newTagIds = tagObjects.map(tagObject => {
-      tagObject[0].clearCache('all')
-      return tagObject[0].id
+    const tagPromises = tags.map(async (tag) => {
+      const [tagObject, created] = await Tag.findOrCreate({ where: { name: tag }, defaults: { count: 1 } })
+      // new tag
+      if (!created) {
+        tagObject.count += 1
+        await tagObject.save()
+        tagObject.clearCache('all')
+      }
+      // exists tag
+      await PostTag.create({ postId: post.id, tagId: tagObject.id })
+      await tagObject.clearCache('all')
+      return tagObject
     })
-
-    // Tags to be added
-    const addPromises = newTagIds.map(tagId => PostTag.create({ postId: post.id, tagId }))
-    await Promise.all(addPromises)
+    await Promise.all(tagPromises)
     await post.clearCache('all')
 
     return res.status(201).json(post)
@@ -122,12 +123,25 @@ const postController = {
       CategoryId: categoryData.id
     })
 
-    const tagPromises = tags.map(tag => Tag.findOrCreate({ where: { name: tag } }))
-    const tagObjects = await Promise.all(tagPromises)
-    const newTagIds = tagObjects.map(tagObject => tagObject[0].id)
-
-    const postTags = await PostTag.cache(`all_postId_${id}`).findAll({ where: { postId: id } })
+    const postTags = await PostTag.findAll({ where: { postId: id } })
     const oldTagIds = postTags.map(postTag => postTag.tagId)
+
+    const tagPromises = tags.map(async (tag) => {
+      const [tagObject, created] = await Tag.findOrCreate({ where: { name: tag }, defaults: { count: 1 } })
+      if (!oldTagIds.includes(tagObject.id)) {
+        // new tag
+        if (!created) {
+          tagObject.count += 1
+          await tagObject.save()
+          await tagObject.clearCache('all')
+        }
+        // exists tag
+        await PostTag.create({ postId: id, tagId: tagObject.id })
+      }
+      return tagObject
+    })
+    const tagObjects = await Promise.all(tagPromises)
+    const newTagIds = tagObjects.map(tagObject => tagObject.id)
 
     // Tags to be removed
     const tagIdsToRemove = oldTagIds.filter(oldTagId => !newTagIds.includes(oldTagId))
@@ -139,6 +153,7 @@ const postController = {
       const tag = await Tag.findByPk(tagId)
 
       tag.count -= 1
+      await tag.clearCache('all')
 
       if (tag.count <= 0) {
         await tag.destroy()
@@ -147,11 +162,6 @@ const postController = {
       }
     })
     await Promise.all(removePromises)
-
-    // Tags to be added
-    const tagIdsToAdd = newTagIds.filter(newTagId => !oldTagIds.includes(newTagId))
-    const addPromises = tagIdsToAdd.map(tagId => PostTag.create({ postId: id, tagId }))
-    await Promise.all(addPromises)
     return res.status(200).json(post)
   },
   deletePost: async (req, res) => {
