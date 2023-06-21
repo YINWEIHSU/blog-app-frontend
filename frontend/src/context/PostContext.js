@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from 'react'
-import axios from 'axios'
+import api from '../api'
 
 const PostContext = createContext()
 const PostContextProvider = ({ children }) => {
@@ -8,17 +8,17 @@ const PostContextProvider = ({ children }) => {
   const [tags, setTags] = useState([])
 
   const getPosts = async () => {
-    const res = await axios.get('/posts')
+    const res = await api.get('/posts')
     setPosts(res.data)
   }
 
   const getPost = async (slug) => {
-    const res = await axios.get(`/posts/${slug}`)
+    const res = await api.get(`/posts/${slug}`)
     return res.data
   }
 
   const createPost = async (input) => {
-    const response = await axios.post('/posts', input)
+    const response = await api.post('/posts', input)
     getPosts()
     getCategories()
     getTags()
@@ -26,7 +26,7 @@ const PostContextProvider = ({ children }) => {
   }
 
   const updatePost = async (slug, input) => {
-    const response = await axios.put(`/posts/${slug}`, input)
+    const response = await api.put(`/posts/${slug}`, input)
     getPosts()
     getCategories()
     getTags()
@@ -34,25 +34,25 @@ const PostContextProvider = ({ children }) => {
   }
 
   const deletePost = async (slug) => {
-    await axios.delete(`/posts/${slug}`)
+    await api.delete(`/posts/${slug}`)
     getPosts()
     getCategories()
     getTags()
   }
 
   const getCategories = async () => {
-    const res = await axios.get('/categories')
+    const res = await api.get('/categories')
     setCategories(res.data)
   }
 
   const createCategory = async (input) => {
-    const response = await axios.post('/categories', { name: input })
+    const response = await api.post('/categories', { name: input })
     getCategories()
     return response
   }
 
   const getTags = async () => {
-    const res = await axios.get('/tags')
+    const res = await api.get('/tags')
     setTags(res.data)
   }
 

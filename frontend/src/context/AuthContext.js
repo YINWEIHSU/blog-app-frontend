@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState, useContext } from 'react'
-import axios from 'axios'
+import api from '../api'
 import PostContext from './PostContext'
 
 const AuthContext = createContext()
@@ -8,25 +8,25 @@ const AuthContextProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(JSON.parse(localStorage.getItem('access_token')) || null)
 
   const register = async (input) => {
-    await axios.post('/auth/register', input)
+    await api.post('/auth/register', input)
   }
 
   const login = async (input) => {
-    const res = await axios.post('/auth/login', input)
+    const res = await api.post('/auth/login', input)
     setCurrentUser(res.data.user)
     await getPosts()
   }
   const logout = async (input) => {
-    await axios.post('/auth/logout')
+    await api.post('/auth/logout')
     setCurrentUser(null)
     await getPosts()
   }
   const getCurrentUser = async () => {
-    const res = await axios.get('/auth/current_user')
+    const res = await api.get('/auth/current_user')
     setCurrentUser(res.data)
   }
   const updateUser = async (input) => {
-    const res = await axios.put(`/users/update/${input.id}`, input)
+    const res = await api.put(`/users/update/${input.id}`, input)
     setCurrentUser(res.data)
   }
 
