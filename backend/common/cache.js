@@ -12,8 +12,8 @@ db.Sequelize.Model.cache = function (key) {
   this.key = key
   return this
 }
-db.Sequelize.Model.prototype.clearCache = async function (key) {
-  const cacheKey = `${this.constructor.name}_${key}`
+db.Sequelize.Model.clearCache = async function (key) {
+  const cacheKey = `${this.name}_${key}`
   await client.del(cacheKey)
 }
 db.Sequelize.Model.findOne = async function () {
