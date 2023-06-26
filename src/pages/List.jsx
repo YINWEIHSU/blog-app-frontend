@@ -21,7 +21,7 @@ const List = () => {
   let filteredPosts = posts
 
   if (category) {
-    filteredPosts = posts.filter(post => post.category_id === category.id)
+    filteredPosts = posts.filter(post => post.categoryId === category.id)
   }
   if (tag) {
     filteredPosts = posts.filter(post => post.tags.some(postTag => postTag.id === tag.id))

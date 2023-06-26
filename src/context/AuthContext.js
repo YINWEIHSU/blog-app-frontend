@@ -12,9 +12,13 @@ const AuthContextProvider = ({ children }) => {
   }
 
   const login = async (input) => {
-    const res = await api.post('/auth/login', input)
-    setCurrentUser(res.data.user)
-    await getPosts()
+    try {
+      const res = await api.post('/auth/login', input)
+      setCurrentUser(res.data.user)
+      await getPosts()
+    } catch (err) {
+      console.log(err)
+    }
   }
   const logout = async (input) => {
     await api.post('/auth/logout')

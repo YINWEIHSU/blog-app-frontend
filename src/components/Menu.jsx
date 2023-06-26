@@ -27,9 +27,9 @@ const Menu = ({ currentPost }) => {
       .slice(0, displayPostNum)
 
     if (!filteredPosts.length) {
-      const currentPostCategoryId = posts.find(post => post.id === currentPost.id)?.category_id
+      const currentPostCategoryId = posts.find(post => post.id === currentPost.id)?.categoryId
       filteredPosts = posts
-        .filter(post => post.category_id === currentPostCategoryId && post.id !== currentPost.id)
+        .filter(post => post.categoryId === currentPostCategoryId && post.id !== currentPost.id)
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
         .slice(0, displayPostNum)
     }
