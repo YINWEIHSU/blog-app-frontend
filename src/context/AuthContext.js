@@ -5,7 +5,7 @@ import PostContext from './PostContext'
 const AuthContext = createContext()
 const AuthContextProvider = ({ children }) => {
   const { getPosts } = useContext(PostContext)
-  const [currentUser, setCurrentUser] = useState(JSON.parse(localStorage.getItem('access_token')) || null)
+  const [currentUser, setCurrentUser] = useState(null)
 
   const register = async (input) => {
     await api.post('/auth/register', input)
